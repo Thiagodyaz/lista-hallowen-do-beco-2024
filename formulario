@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulário com Opções em Múltipla Escolha</title>
+</head>
+<body>
+    <h1>Formulário</h1>
+    <form id="formulario" action="/submit" method="post">
+        <section>
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required>
+        </section>
+        <section>
+            <h2>Opções 1:</h2>
+            <input type="radio" id="opcao1a" name="opcao1" value="Opção 1A">
+            <label for="opcao1a">Opção 1A</label><br>
+            <input type="radio" id="opcao1b" name="opcao1" value="Opção 1B">
+            <label for="opcao1b">Opção 1B</label><br>
+            <input type="radio" id="opcao1c" name="opcao1" value="Opção 1C">
+            <label for="opcao1c">Opção 1C</label><br>
+        </section>
+        <section>
+            <h2>Opções 2:</h2>
+            <input type="radio" id="opcao2a" name="opcao2" value="Opção 2A">
+            <label for="opcao2a">Opção 2A</label><br>
+            <input type="radio" id="opcao2b" name="opcao2" value="Opção 2B">
+            <label for="opcao2b">Opção 2B</label><br>
+            <input type="radio" id="opcao2c" name="opcao2" value="Opção 2C">
+            <label for="opcao2c">Opção 2C</label><br>
+        </section>
+        <input type="submit" value="Enviar">
+    </form>
+
+    <div id="respostas">
+        <h2>Respostas:</h2>
+        <ul id="listaRespostas"></ul>
+    </div>
+
+    <script>
+        const form = document.getElementById('formulario');
+        const opcoes1 = document.querySelectorAll('input[name="opcao1"]');
+        const opcoes2 = document.querySelectorAll('input[name="opcao2"]');
+        const listaRespostas = document.getElementById('listaRespostas');
+
+        // Função para criar ou atualizar um cookie
+        function setCookie(name, value) {
+            document.cookie = `${name}=${value}`;
+        }
+
+        // Função para obter um cookie
+        function getCookie(name) {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [cookieName, cookieValue] = cookie.trim().split('=');
+                if (cookieName === name) {
+                    return cookieValue;
+                }
+            }
+            return null;
+        }
+
+        // Verificar se há opções armazenadas nos cookies e preencher o formulário se houver
+        const opcaoSelecionada1Cookie = getCookie('opcaoSelecionada1');
+        const opcaoSelecionada2Cookie = getCookie('opcaoSelecionada2');
+
+        if (opcaoSelecionada1Cookie) {
+            document.querySelector(`input[value="${opcaoSelecionada1Cookie}"]`).checked = true;
+        }
+        if (opcaoSelecionada2Cookie) {
+            document.querySelector(`input[value="${opcaoSelecionada2Cookie}"]`).checked = true;
+        }
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+
+            // Obter nome do formulário
+            const nome = document.getElementById('nome').value;
+
+            // Obter opções selecionadas
+            let opcaoSelecionada1 = '';
+            let opcaoSelecionada2 = '';
+
+            opcoes1.forEach(opcao => {
+                if (opcao.checked) {
+                    opcaoSelecionada1 = opcao.value;
+                    setCookie('opcaoSelecionada1', opcaoSelecionada1); // Armazenar no cookie
+                    opcao.style.display = 'none'; // Oculta a opção selecionada
+                }
+            });
+
+            opcoes2.forEach(opcao => {
+                if (opcao.checked) {
+                    opcaoSelecionada2 = opcao.value;
+                    setCookie('opcaoSelecionada2', opcaoSelecionada2); // Armazenar no cookie
+                    opcao.style.display = 'none'; // Oculta a opção selecionada
+                }
+            });
+
+            // Adicionar resposta à lista
+            const resposta = document.createElement('li');
+            resposta.textContent = `${nome}: Opção 1 - ${opcaoSelecionada1}, Opção 2 - ${opcaoSelecionada2}`;
+            listaRespostas.appendChild(resposta);
+
+            // Limpar opções selecionadas
+            opcoes1.forEach(opcao => opcao.checked = false);
+            opcoes2.forEach(opcao => opcao.checked = false);
+        });
+    </script>
+</body>
+</html>
